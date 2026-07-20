@@ -1,0 +1,64 @@
+[project]
+name = "judge-bias"
+version = "0.1.0"
+description = "Measuring judge-LLM bias in penetration-testing / security evaluation."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "judge-bias-analysis" }]
+
+# Base install is intentionally light and fully offline-capable: the whole
+# pipeline runs end-to-end against the deterministic `mock` provider with no
+# API keys. Real provider SDKs live in the optional extras below.
+dependencies = [
+    "pydantic>=2.6",
+    "numpy>=1.26",
+    "pandas>=2.1",
+    "scipy>=1.11",
+    "statsmodels>=0.14",
+    "scikit-learn>=1.3",
+    "matplotlib>=3.8",
+    "krippendorff>=0.6",
+    "typer>=0.12",
+    "rich>=13.7",
+    "python-dotenv>=1.0",
+]
+
+[project.optional-dependencies]
+# Backend SDKs (all open-weight). Install with: uv sync --extra providers
+#   openai  -> used purely as the HTTP client for OpenWebUI / vLLM (OpenAI-compatible)
+#   groq    -> Groq API. Ollama needs no SDK (stdlib HTTP).
+providers = [
+    "openai>=1.30",
+    "groq>=0.9",
+]
+# HuggingFace dataset loaders (RewardBench / MT-Bench / CTIBench).
+data = [
+    "datasets>=2.19",
+    "requests>=2.31",
+]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.4",
+]
+
+[project.scripts]
+judge-bias = "judge_bias.cli:app"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/judge_bias"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

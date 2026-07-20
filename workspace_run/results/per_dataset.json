@@ -1,0 +1,20 @@
+[
+  {
+    "dataset":"cyberseceval",
+    "domain":"security",
+    "n_items":96,
+    "n_judges":8,
+    "n_pointwise":5798,
+    "mean_spi":0.2268128918,
+    "fe_self_coef":0.0629087201,
+    "fe_self_p":0.5258201324,
+    "size_coef":0.1737914234,
+    "family_coef":0.2625275971,
+    "mean_kendall_tau":0.7244897959,
+    "n_distinct_top1":2,
+    "position_flip_rate":0.1559281988,
+    "refusal_rate":0.3326027268,
+    "krippendorff_alpha":0.3667967834,
+    "blinded_delta_abs_spi":0.0535879838
+  }
+]

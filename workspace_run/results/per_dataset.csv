@@ -1,0 +1,2 @@
+dataset,domain,n_items,n_judges,n_pointwise,mean_spi,fe_self_coef,fe_self_p,size_coef,family_coef,mean_kendall_tau,n_distinct_top1,position_flip_rate,refusal_rate,krippendorff_alpha,blinded_delta_abs_spi
+cyberseceval,security,96,8,5798,0.22681289180322012,0.06290872007740032,0.5258201324103493,0.173791423437392,0.2625275971220177,0.7244897959183673,2,0.15592819876872507,0.33260272681233394,0.3667967833855409,0.05358798382674462
