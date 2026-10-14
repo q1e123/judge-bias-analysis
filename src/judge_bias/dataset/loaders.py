@@ -124,6 +124,13 @@ def load_cyberseceval(repo_path: str | Path | None = None, categories: list[str]
             prompt = r.get("mutated_prompt") or r.get("test_case_prompt") or r.get("prompt", "")
             if not prompt:
                 continue
+            # Prompt-injection records put the attack in ``user_input``; without it
+            # the item is only the system instruction. The published run
+            # (inputs/pi35x3.jsonl) predates this fix and delivered the instruction
+            # alone. Hashing the combined prompt also keeps the IDs of records that
+            # share an instruction distinct.
+            if r.get("user_input"):
+                prompt = f"System instruction:\n{prompt}\n\nUser message:\n{r['user_input']}"
             iid = "cse-" + hashlib.sha256((cat + prompt).encode()).hexdigest()[:12]
             cat_items.append(TaskItem(
                 item_id=iid, dataset="cyberseceval", category=cat,

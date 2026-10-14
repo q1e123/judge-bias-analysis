@@ -1,4 +1,7 @@
 data/
+paper/
+*.zip
+*.pdf
 venv-wsl/
 runs/
 # Byte-compiled / optimized / DLL files
@@ -221,3 +224,4 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+paper/t1-formata-bold.pfb

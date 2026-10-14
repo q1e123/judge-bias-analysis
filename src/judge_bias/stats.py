@@ -120,6 +120,8 @@ def _prep_regression_df(judgments, cfg: RunConfig,
     pw["same_family_nonself"] = ((pw["solver_family"] == pw["judge_family"])
                                  & (pw["judge"] != pw["solver"])).astype(int)
     pw["verbosity"] = pw["answer_len"].astype(float)
+    # one level per exact solver answer, for the answer-level fixed-effects variant
+    pw["answer"] = pw["solver"] + "|" + pw["item_id"]
     if anchor_scores:
         pw["correctness"] = pw["solver"].map(lambda s: anchor_scores.get(s, np.nan))
     return pw.dropna(subset=["log10_size", "parsed_score", "verbosity"])

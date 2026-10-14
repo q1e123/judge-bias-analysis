@@ -44,7 +44,8 @@ def _fe_design(pw: pd.DataFrame, extra: list[str] | None = None,
 
 
 def self_preference_ri(judgments, cfg: RunConfig, n_perm: int = 10_000,
-                       seed: int = 13) -> dict:
+                       seed: int = 13,
+                       factors: tuple[str, ...] = ("judge", "solver", "item_id")) -> dict:
     """Randomization test for the per-judge self-preference tau_k.
 
     Within each judge's row the "self" cell is reassigned to a random out-family
@@ -52,7 +53,8 @@ def self_preference_ri(judgments, cfg: RunConfig, n_perm: int = 10_000,
     every tau_k, and their between-judge standard deviation are built. Restricting
     pseudo-self cells to out-family solvers keeps the randomized indicator
     disjoint from the non-self family control, just as it is in the observed
-    design.
+    design. ``factors=("judge", "answer")`` replaces the separate solver and
+    item effects with one effect per exact solver answer.
     """
     pw = _prep_regression_df(judgments, cfg)
     judges = sorted(pw["judge"].unique())
@@ -68,7 +70,8 @@ def self_preference_ri(judgments, cfg: RunConfig, n_perm: int = 10_000,
     # partial out a non-self same-family term too, so tau_k is net of any
     # sibling favouritism (a judge preferring its own family) and not just its
     # own leniency and answer quality
-    resid = _residualizer(_fe_design(pw, extra=["same_family_nonself"]))
+    resid = _residualizer(_fe_design(pw, extra=["same_family_nonself"],
+                                     factors=factors))
     ry = resid(y)
 
     # residualize every candidate (judge j, solver m) self-indicator once
@@ -115,21 +118,24 @@ def self_preference_ri(judgments, cfg: RunConfig, n_perm: int = 10_000,
 
 
 def family_bias_ri(judgments, cfg: RunConfig, n_perm: int = 10_000,
-                   seed: int = 17) -> dict:
+                   seed: int = 17,
+                   factors: tuple[str, ...] = ("judge", "solver", "item_id")) -> dict:
     """Permutation test for same-family bias, pooled and per family.
 
     Family labels are shuffled across the eight models; the same-family
     treatment is rebuilt and the solver-fixed-effects regression refit each
     draw. Reported for the pooled coefficient and for each family with more than
     one member, so no single family's effect leans on the approximate
-    cluster-robust p-value.
+    cluster-robust p-value. Under ``factors=("judge", "answer")`` the length
+    control is dropped because answer length is constant within an answer.
     """
     pw = _prep_regression_df(judgments, cfg)
     pw = pw[pw["is_self"] == 0].copy()
     models = [m.name for m in cfg.models]
     base_fam = {m.name: m.family for m in cfg.models}
     y = pw["parsed_score"].to_numpy(dtype=float)
-    resid = _residualizer(_fe_design(pw, extra=["verbosity"]))
+    extra = [] if "answer" in factors else ["verbosity"]
+    resid = _residualizer(_fe_design(pw, extra=extra, factors=factors))
     ry = resid(y)
 
     jarr, sarr = pw["judge"].to_numpy(), pw["solver"].to_numpy()
